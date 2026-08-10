@@ -1,0 +1,751 @@
+/*
+========================================
+MEDICUS Planner v1.0.1
+TV + TABLET + MOBILE
+========================================
+*/
+
+
+* {
+    box-sizing:border-box;
+}
+
+
+
+body {
+
+    margin:0;
+
+    background:#0f172a;
+
+    color:white;
+
+    font-family:Arial, sans-serif;
+
+}
+
+
+
+
+
+
+/* HEADER */
+
+
+header {
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    padding:20px 40px;
+
+}
+
+
+
+h1 {
+
+    font-size:42px;
+
+    margin:0;
+
+}
+
+
+
+#status {
+
+    font-size:18px;
+
+    color:#94a3b8;
+
+}
+
+
+
+
+
+
+
+
+/* MIESIĄCE */
+
+
+#month-bar {
+
+display:grid;
+
+grid-template-columns:repeat(6,1fr);
+
+gap:8px;
+
+padding:10px 40px;
+
+}
+
+
+
+#month-bar button {
+
+background:#1e293b;
+
+color:white;
+
+border:none;
+
+padding:10px 8px;
+
+border-radius:8px;
+
+cursor:pointer;
+
+font-size:14px;
+
+white-space:nowrap;
+
+}
+
+
+
+#month-bar button:hover {
+
+    background:#334155;
+
+}
+
+
+
+#month-bar button.active {
+
+    background:#2563eb;
+
+}
+
+
+
+
+
+
+
+#current-month {
+
+    padding-left:40px;
+
+    font-size:30px;
+
+    margin:20px 0;
+
+}
+
+
+
+
+
+
+
+
+
+/*
+========================================
+TABLICA
+========================================
+*/
+
+
+#planner-wrapper {
+
+    overflow-x:auto;
+
+}
+
+
+
+
+
+#planner {
+
+
+    display:grid;
+
+
+    grid-template-columns:
+
+    130px repeat(4,260px);
+
+
+
+    gap:12px;
+
+
+
+    padding:20px 40px;
+
+
+
+    min-width:1200px;
+
+
+}
+
+
+
+
+
+
+
+.cell {
+
+
+    background:#1e293b;
+
+
+    border-radius:12px;
+
+
+    padding:10px;
+
+
+
+    min-height:90px;
+
+
+    overflow:hidden;
+
+
+}
+
+
+
+
+
+
+.header {
+
+
+    background:#334155;
+
+
+    font-size:22px;
+
+
+    font-weight:bold;
+
+
+    text-align:center;
+
+
+}
+
+
+
+
+
+
+
+
+.date {
+
+
+    display:flex;
+
+
+    flex-direction:column;
+
+
+    justify-content:center;
+
+
+    align-items:center;
+
+
+    font-size:20px;
+
+
+    font-weight:bold;
+
+
+}
+
+
+
+
+
+
+
+
+/*
+========================================
+KAFELKI
+========================================
+*/
+
+
+.card {
+
+
+    height:100%;
+
+
+    border-radius:10px;
+
+
+    padding:12px;
+
+
+
+    font-size:18px;
+
+
+    line-height:1.35;
+
+
+
+    cursor:pointer;
+
+
+
+    overflow:visible;
+
+
+
+    position:relative;
+
+
+}
+
+
+
+
+
+.card:hover {
+
+
+    overflow:visible;
+
+
+    z-index:10;
+
+
+}
+
+
+
+
+
+
+
+.card:hover::after {
+
+
+    content:attr(data-full);
+
+
+
+    position:absolute;
+
+
+
+    left:0;
+
+    top:100%;
+
+
+
+    background:#020617;
+
+
+
+    padding:12px;
+
+
+
+    border-radius:8px;
+
+
+
+    width:320px;
+
+
+
+    font-size:16px;
+
+
+
+    z-index:20;
+
+
+}
+
+
+
+
+
+
+
+.task-type {
+
+
+    font-size:14px;
+
+    opacity:.9;
+
+    margin-bottom:6px;
+
+}
+
+
+
+
+.task-main {
+
+    font-size:18px;
+
+    font-weight:bold;
+
+    line-height:1.25;
+
+    word-break:break-word;
+
+}
+
+
+
+.task-line {
+
+
+    margin-top:5px;
+
+}
+
+
+
+
+
+
+
+/*
+========================================
+KOLORY TECHNIKÓW
+========================================
+*/
+
+
+.przemek {
+
+    background:#2563eb;
+
+}
+
+
+
+.rafal {
+
+    background:#7c3aed;
+
+}
+
+
+
+.marcin {
+
+    background:#ca8a04;
+
+}
+
+
+
+.michal {
+
+    background:#db2777;
+
+}
+
+
+
+
+
+
+
+
+footer {
+
+
+    padding:20px 40px;
+
+
+    color:#94a3b8;
+
+
+}
+
+
+
+
+
+
+
+
+/*
+========================================
+TABLET
+========================================
+*/
+
+
+@media(max-width:900px){
+
+
+    header {
+
+
+        padding:15px 20px;
+
+
+    }
+
+
+
+    h1 {
+
+
+        font-size:32px;
+
+
+    }
+
+
+
+
+    #month-bar {
+
+
+        padding:10px 20px;
+
+
+    }
+
+
+
+
+    #current-month {
+
+
+        padding-left:20px;
+
+
+        font-size:26px;
+
+
+    }
+
+
+
+
+    #planner {
+
+
+        padding:20px;
+
+
+    }
+
+
+}
+
+
+
+
+
+
+
+
+
+/*
+========================================
+TELEFON
+========================================
+*/
+
+
+@media(max-width:600px){
+
+
+
+    header {
+
+
+        padding:15px;
+
+
+    }
+
+
+
+
+    h1 {
+
+
+        font-size:26px;
+
+
+    }
+
+
+
+
+    #status {
+
+
+        font-size:14px;
+
+
+    }
+
+
+
+
+
+    #month-bar {
+
+
+        padding:10px;
+
+        gap:6px;
+
+
+    }
+
+
+
+
+
+    #month-bar button {
+
+
+        padding:8px 10px;
+
+
+        font-size:12px;
+
+
+    }
+
+
+
+
+
+
+    #current-month {
+
+
+        padding-left:15px;
+
+
+        font-size:22px;
+
+
+    }
+
+
+
+
+
+    #planner {
+
+
+        grid-template-columns:
+
+        100px repeat(4,220px);
+
+
+
+        gap:8px;
+
+
+
+        padding:15px;
+
+
+
+        min-width:980px;
+
+
+    }
+
+
+
+
+
+
+
+    .cell {
+
+
+        min-height:100px;
+
+
+        padding:8px;
+
+
+    }
+
+
+
+
+
+
+
+    .header {
+
+
+        font-size:18px;
+
+
+    }
+
+
+
+
+
+
+    .date {
+
+
+        font-size:16px;
+
+
+    }
+
+
+
+
+
+
+
+    .card {
+
+
+        font-size:16px;
+
+
+    }
+
+
+
+
+
+
+    .task-main {
+
+
+        font-size:18px;
+
+
+    }
+
+
+
+}

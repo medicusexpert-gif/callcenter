@@ -1,0 +1,108 @@
+* { box-sizing: border-box; }
+body { margin: 0; background: #020617; color: white; font-family: Arial, sans-serif; overflow: hidden; height: 100vh; }
+.wrapper { height: 100vh; display: flex; flex-direction: column; padding: 0 0.5vw; }
+
+#month-nav { display: flex; background: #0f172a; padding: 3px; gap: 4px; border-bottom: 1px solid #1e293b; }
+.nav-btn { background: #1e293b; color: #94a3b8; border: 1px solid #334155; padding: 2px 8px; font-size: 1.3vh; cursor: pointer; border-radius: 3px; }
+.nav-btn.active { color: #00ff00; border-color: #00ff00; background: #064e3b; }
+
+.header {
+    height: 3.5vh;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 1vw;
+    background: #0f172a;
+    border-bottom: 2px solid #1e293b;
+}
+
+.title { font-size: 3.5vh; font-weight: bold; color: #38bdf8; min-width: 250px; }
+.nav-container { display: flex; gap: 5px; flex-wrap: wrap; justify-content: center; flex-grow: 1; margin: 0 20px; }
+
+.time-box { display: flex; align-items: center; gap: 20px; min-width: 350px; justify-content: flex-end; }
+.time { font-size: 4vh; font-family: 'Courier New', monospace; font-weight: bold; color: #ffffff; }
+.refresh-btn { background: #0ea5e9; color: white; border: none; padding: 10px 15px; border-radius: 6px; cursor: pointer; font-size: 1.6vh; font-weight: bold; }
+
+#table-container { flex-grow: 1; height: 88vh; overflow: hidden; }
+table { width: 100%; height: 100%; border-collapse: separate; border-spacing: 2px; table-layout: fixed; }
+
+.logo-space { position: relative; background: #1e293b !important; }
+.table-logo { 
+    position: absolute; 
+    top: 50%; left: 50%; 
+    transform: translate(-50%, -50%); 
+    width: 100%; height: 100%; 
+    object-fit: fill; 
+}
+
+th { background: #1e293b; text-transform: uppercase; padding: 2px; }
+.day { font-size: 1.8vh; color: #94a3b8; text-align: center; font-weight: bold; }
+.date { font-size: 1.8vh; color: #38bdf8; text-align: center; font-weight: bold; }
+.tech-data { 
+    text-align: center; 
+    font-size: 2.4vh; 
+    border: 1px solid #334155; 
+    position: relative;
+    white-space: nowrap; /* TO WYMUSI JEDNĄ LINIĘ NA TV, NAWET JEŚLI W ARKUSZU SĄ ENTERY */
+}
+
+.week-odd td { background: #0f172a; }
+.week-even td { background: #1e293b; }
+
+.today-row td {
+    background-color: rgba(0, 150, 0, 0.25) !important;
+    border-top: 3px solid #00ff00 !important;
+    border-bottom: 3px solid #00ff00 !important;
+    box-shadow: inset 0 0 15px rgba(0, 255, 0, 0.2);
+}
+
+/* Domyślny kolor dla tekstu wewnątrz komórek danych */
+.tech-data span {
+    color: inherit; /* Będzie brał kolor z nadrzędnego elementu lub inline style */
+}
+
+/* Dodaj domyślny biały dla tabeli, żeby span bez stylu był biały */
+table {
+    color: #ffffff;
+    /* ... reszta bez zmian ... */
+}
+
+/* Klasa dla niebieskiego świecenia */
+.neon-blue-text {
+    color: #00d2ff !important;
+    text-shadow: 0 0 8px #0044ff, 0 0 15px #0044ff !important;
+    font-weight: bold !important;
+}
+
+/* Styl dla alarmu - teraz pulsuje cała komórka */
+@keyframes alarm-red {
+    0% { background-color: #450a0a; box-shadow: inset 0 0 10px #ff0000; }
+    100% { background-color: #ff0000; box-shadow: inset 0 0 60px 20px #450a0a; }
+}
+
+.alarm-pulse { 
+    animation: alarm-red 0.5s infinite alternate !important;
+}
+
+/* Ważne: usuwamy wymuszanie koloru z klasy alarmu dla spana, 
+   żeby 8-16 mogło być niebieskie nawet w trakcie alarmu (opcjonalnie) */
+.alarm-pulse span { 
+    text-shadow: 0 0 5px #000000;
+}
+
+td:nth-child(3) { border-left: 10px solid #38bdf8; }
+td:nth-child(4) { border-left: 10px solid #818cf8; }
+td:nth-child(5) { border-left: 10px solid #fbbf24; }
+td:nth-child(6) { border-left: 10px solid #f472b6; }
+
+/* MARQUEE - Tutaj usunięto tylko sztywne justify-content */
+.marquee-box { width: 100%; height: 100%; display: flex; align-items: center; overflow: hidden; padding: 0; }
+.marquee-box span { display: inline-block; white-space: nowrap; padding: 0 10px; }
+.animate-scroll { animation: smart-scroll 10s linear infinite alternate; }
+
+@keyframes smart-scroll {
+  0%, 15% { transform: translateX(0); } /* Pauza na starcie - widać początek tekstu */
+  85%, 100% { transform: translateX(var(--scroll-dist)); }
+}
+
+.footer { height: 2vh; text-align: right; font-size: 1.2vh; color: #475569; padding-right: 10px; }

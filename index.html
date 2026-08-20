@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Harmonogram Techników</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="wrapper">
+
+        <div class="header">
+            <div class="title" id="current-month-name">
+                MIESIĄC 2026
+            </div>
+
+            <div id="month-nav" class="nav-container"></div>
+
+            <div class="time-box">
+                <button class="refresh-btn" onclick="loadData()">
+                    AKTUALIZUJ
+                </button>
+
+                <div class="time" id="clock">
+                    00:00:00
+                </div>
+            </div>
+        </div>
+
+        <div id="table-container"></div>
+
+        <div class="footer">
+            Ostatnia aktualizacja:
+            <span id="update-time">-</span>
+        </div>
+
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

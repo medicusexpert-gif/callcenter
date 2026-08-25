@@ -547,11 +547,11 @@ loadData();
 setInterval(updateClock, 1000);
 
 // Odświeżanie danych co 3 minuty.
-setInterval(loadData, 180000);
+setInterval(refreshCurrentView, 180000);
 
 // GDR może rozpocząć/ zakończyć alarm w trakcie minuty,
 // dlatego sprawdzamy stan również co 20 sekund.
-setInterval(loadData, 20000);
+setInterval(refreshCurrentView, 20000);
 
 window.addEventListener("resize", () => {
     fitMonthToScreen();

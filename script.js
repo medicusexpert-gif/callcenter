@@ -547,11 +547,62 @@ loadData();
 setInterval(updateClock, 1000);
 
 // Odświeżanie danych co 3 minuty.
-setInterval(refreshCurrentView, 180000);
+//setInterval(refreshCurrentView, 180000);
 
 // GDR może rozpocząć/ zakończyć alarm w trakcie minuty,
 // dlatego sprawdzamy stan również co 20 sekund.
-setInterval(refreshCurrentView, 20000);
+//setInterval(refreshCurrentView, 20000);
+
+//window.addEventListener("resize", () => {
+   // fitMonthToScreen();
+   // setTimeout(initSmartMarquee, 50);
+//});
+// ============================================================
+// AUTOMATYCZNE ODŚWIEŻANIE
+// ============================================================
+
+let refreshInProgress = false;
+
+async function refreshCurrentView() {
+    if (refreshInProgress) return;
+
+    refreshInProgress = true;
+
+    try {
+        if (currentView === "tasks") {
+            await loadTasks();
+        } else {
+            await loadData();
+        }
+
+        console.log(
+            "Dane odświeżone:",
+            new Date().toLocaleTimeString("pl-PL")
+        );
+
+    } catch (error) {
+        console.error(
+            "Błąd odświeżania:",
+            error
+        );
+    } finally {
+        refreshInProgress = false;
+    }
+}
+
+
+// ============================================================
+// START
+// ============================================================
+
+renderNav();
+updateClock();
+loadData();
+
+setInterval(updateClock, 1000);
+
+// Google Sheets - odświeżanie co 1 minutę
+setInterval(refreshCurrentView, 60000);
 
 window.addEventListener("resize", () => {
     fitMonthToScreen();

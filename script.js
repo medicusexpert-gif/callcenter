@@ -7,7 +7,7 @@
     Liczba osób jest pobierana dynamicznie z pierwszego wiersza.
 */
 
-const SPREADSHEET_ID = "1mOXbnkWc80LKI7D2D3YB--xDGsf7ZLmgSONmf0P_ECk";
+const SPREADSHEET_ID = "1mOXbnkWc80LKI7D2D3YB--xDGsf7ZLmgSONmf0P_EcK";
 
 const monthNames = [
     "Styczeń", "Luty", "Marzec", "Kwiecień", "Maj", "Czerwiec",
@@ -82,6 +82,7 @@ function parseCSV(text) {
     }
 
     row.push(cell.trim());
+
     if (row.some(v => v !== "")) rows.push(row);
 
     return rows;
@@ -106,6 +107,7 @@ function escapeHTML(value) {
 
     Dlatego NIE ma już żadnego row[1] jako DATA.
 */
+
 function splitDayAndDate(value) {
     const text = String(value || "").trim();
     const match = text.match(/^(.+?),\s*(\d{1,2})\s+(\d{1,2})$/);
@@ -139,6 +141,7 @@ function getDateFromSheetCell(value) {
 
     // Analogicznie dla zakładek miesięcznych zawierających dni z sąsiedniego miesiąca.
     const selectedMonth = Number(currentViewMonth);
+
     if (month > selectedMonth && selectedMonth <= 2) {
         year--;
     }
@@ -148,12 +151,15 @@ function getDateFromSheetCell(value) {
 
 function isDateInSelectedMonth(sheetDateText) {
     const d = getDateFromSheetCell(sheetDateText);
+
     if (!d) return false;
+
     return d.getMonth() === Number(currentViewMonth) - 1;
 }
 
 function isToday(sheetDateText) {
     const d = getDateFromSheetCell(sheetDateText);
+
     if (!d) return false;
 
     const now = new Date();
@@ -169,6 +175,7 @@ function formatCellContent(text, rowDateText) {
 
     // Kolorowanie godzin pracy.
     // Najpierw rozpoznajemy pełny zakres, żeby nie kolidować z GDR.
+
     content = content.replace(
         /\b8\s*-\s*16\b/gi,
         '<span class="neon-blue-text">8-16</span>'
@@ -198,14 +205,17 @@ function formatCellContent(text, rowDateText) {
     30 minut przed początkiem GDR.
     Np. GDR 15-16 => alarm 14:30-15:00.
 */
+
 function getGdrAlarmInfo(text, rowDateText) {
     const match = String(text || "").match(/\(?\s*GDR\s+(\d{1,2})\s*-\s*(\d{1,2})\s*\)?/i);
+
     if (!match) return { active: false };
 
     const startHour = Number(match[1]);
     const startMinute = 0;
 
     const rowDate = getDateFromSheetCell(rowDateText);
+
     if (!rowDate) return { active: false };
 
     const now = new Date();
@@ -219,91 +229,197 @@ function getGdrAlarmInfo(text, rowDateText) {
     }
 
     const start = new Date(rowDate);
-    start.setHours(startHour, startMinute, 0, 0);
 
-    const alarmStart = new Date(start.getTime() - 30 * 60 * 1000);
+    start.setHours(
+        startHour,
+        startMinute,
+        0,
+        0
+    );
+
+    const alarmStart =
+        new Date(
+            start.getTime() -
+            30 * 60 * 1000
+        );
 
     return {
-        active: now >= alarmStart && now < start
+        active:
+            now >= alarmStart &&
+            now < start
     };
 }
 
+
 async function loadData() {
-    const sheetName = monthNames[Number(currentViewMonth) - 1];
-    const url = sheetUrl(sheetName);
+    const sheetName =
+        monthNames[
+            Number(currentViewMonth) - 1
+        ];
+
+    const url =
+        sheetUrl(sheetName);
 
     try {
-        const response = await fetch(url + "&_=" + Date.now(), {
-            cache: "no-store"
-        });
+
+        const response =
+            await fetch(
+                url + "&_=" + Date.now(),
+                {
+                    cache: "no-store"
+                }
+            );
 
         if (!response.ok) {
-            throw new Error("HTTP " + response.status);
+            throw new Error(
+                "HTTP " +
+                response.status
+            );
         }
 
-        const raw = await response.text();
-        const rows = parseCSV(raw);
+        const raw =
+            await response.text();
+
+        const rows =
+            parseCSV(raw);
 
         if (!rows.length) {
-            throw new Error("Google Sheets zwrócił pusty arkusz.");
+            throw new Error(
+                "Google Sheets zwrócił pusty arkusz."
+            );
         }
 
         // Pierwszy wiersz = nagłówki:
         // A1 = Data
         // B1... = osoby.
-        const header = rows[0];
+
+        const header =
+            rows[0];
 
         // B-I w pokazanym arkuszu = 8 osób.
         // Skrypt działa również, gdy osób będzie więcej/mniej.
-        const people = header.slice(1);
 
-        let html = "<table>";
+        const people =
+            header.slice(1);
+
+        let html =
+            "<table>";
 
         // Pierwsza kolumna to DZIEŃ + DATA.
         // Pozostałe kolumny to osoby.
-        html += "<colgroup>";
-        html += '<col style="width:13%;">';
 
-        const personWidth = Math.max(8, 87 / Math.max(people.length, 1));
-        for (let i = 0; i < people.length; i++) {
-            html += `<col style="width:${personWidth}%;">`;
+        html +=
+            "<colgroup>";
+
+        html +=
+            '<col style="width:13%;">';
+
+        const personWidth =
+            Math.max(
+                8,
+                87 /
+                Math.max(
+                    people.length,
+                    1
+                )
+            );
+
+        for (
+            let i = 0;
+            i < people.length;
+            i++
+        ) {
+            html +=
+                `<col style="width:${personWidth}%;">`;
         }
-        html += "</colgroup>";
 
-        html += "<thead><tr>";
+        html +=
+            "</colgroup>";
 
-        html += '<th class="day-cell">DZIEŃ</th>';
+        html +=
+            "<thead><tr>";
+
+        html +=
+            '<th class="day-cell">DZIEŃ</th>';
 
         people.forEach(name => {
-            html += `<th class="person-name">${escapeHTML(name || "—")}</th>`;
+            html +=
+                `<th class="person-name">${escapeHTML(
+                    name || "—"
+                )}</th>`;
         });
 
-        html += "</tr></thead><tbody>";
+        html +=
+            "</tr></thead><tbody>";
 
         // Stałe 5 tygodni x 7 dni = 35 pozycji.
         // Niedziele są siódmym dniem każdego tygodnia i są ukrywane na TV.
-        const dataRows = rows.slice(1, 36);
 
-        for (let dayIndex = 0; dayIndex < 35; dayIndex++) {
-            const row = dataRows[dayIndex] || [];
-            const dayCell = row[0] || "";
-            const parts = splitDayAndDate(dayCell);
+        const dataRows =
+            rows.slice(1, 36);
 
-            const outsideMonth = dayCell
-                ? !isDateInSelectedMonth(dayCell)
-                : true;
+        for (
+            let dayIndex = 0;
+            dayIndex < 35;
+            dayIndex++
+        ) {
 
-            const today = dayCell ? isToday(dayCell) : false;
-            const weekNumber = Math.floor(dayIndex / 7) + 1;
-            const weekClass = weekNumber % 2 === 0 ? "week-even" : "week-odd";
-            const isSunday = (dayIndex % 7) === 6;
+            const row =
+                dataRows[dayIndex] || [];
 
-            let classes = weekClass;
-            if (outsideMonth) classes += " outside-month";
-            if (today) classes += " today-row";
-            if (isSunday) classes += " sunday-row";
+            const dayCell =
+                row[0] || "";
 
-            html += `<tr class="${classes}">`;
+            const parts =
+                splitDayAndDate(
+                    dayCell
+                );
+
+            const outsideMonth =
+                dayCell
+                    ? !isDateInSelectedMonth(
+                        dayCell
+                    )
+                    : true;
+
+            const today =
+                dayCell
+                    ? isToday(dayCell)
+                    : false;
+
+            const weekNumber =
+                Math.floor(
+                    dayIndex / 7
+                ) + 1;
+
+            const weekClass =
+                weekNumber % 2 === 0
+                    ? "week-even"
+                    : "week-odd";
+
+            const isSunday =
+                (dayIndex % 7) === 6;
+
+            let classes =
+                weekClass;
+
+            if (outsideMonth) {
+                classes +=
+                    " outside-month";
+            }
+
+            if (today) {
+                classes +=
+                    " today-row";
+            }
+
+            if (isSunday) {
+                classes +=
+                    " sunday-row";
+            }
+
+            html +=
+                `<tr class="${classes}">`;
 
             html += `
                 <td class="day-cell">
@@ -312,21 +428,52 @@ async function loadData() {
                 </td>
             `;
 
-            for (let c = 1; c < people.length + 1; c++) {
-                const cell = row[c] || "";
+            for (
+                let c = 1;
+                c < people.length + 1;
+                c++
+            ) {
 
-                const gdr = (!outsideMonth && !isSunday && dayCell)
-                    ? getGdrAlarmInfo(cell, dayCell)
-                    : { active:false };
+                const cell =
+                    row[c] || "";
+
+                const gdr =
+                    (!outsideMonth &&
+                     !isSunday &&
+                     dayCell)
+                        ? getGdrAlarmInfo(
+                            cell,
+                            dayCell
+                          )
+                        : {
+                            active:false
+                          };
 
                 let content;
-                if (outsideMonth && cell.trim()) {
-                    content = `<span class="outside-month-text">${escapeHTML(cell)}</span>`;
+
+                if (
+                    outsideMonth &&
+                    cell.trim()
+                ) {
+
+                    content =
+                        `<span class="outside-month-text">${escapeHTML(
+                            cell
+                        )}</span>`;
+
                 } else {
-                    content = formatCellContent(cell, dayCell);
+
+                    content =
+                        formatCellContent(
+                            cell,
+                            dayCell
+                        );
                 }
 
-                const alarmClass = gdr.active ? " alarm-pulse" : "";
+                const alarmClass =
+                    gdr.active
+                        ? " alarm-pulse"
+                        : "";
 
                 html += `
                     <td class="tech-data${alarmClass}">
@@ -337,106 +484,230 @@ async function loadData() {
                 `;
             }
 
-            html += "</tr>";
+            html +=
+                "</tr>";
         }
 
-        html += "</tbody></table>";
+        html +=
+            "</tbody></table>";
 
-        document.getElementById("table-container").innerHTML = html;
-        document.getElementById("update-time").innerText =
-            new Date().toLocaleTimeString("pl-PL");
+        document.getElementById(
+            "table-container"
+        ).innerHTML =
+            html;
+
+        document.getElementById(
+            "update-time"
+        ).innerText =
+            new Date().toLocaleTimeString(
+                "pl-PL"
+            );
 
         fitMonthToScreen();
-        setTimeout(initSmartMarquee, 100);
+
+        setTimeout(
+            initSmartMarquee,
+            100
+        );
+
     } catch (err) {
-        console.error("Błąd Google Sheets:", err);
-        document.getElementById("table-container").innerHTML = `
+
+        console.error(
+            "Błąd Google Sheets:",
+            err
+        );
+
+        document.getElementById(
+            "table-container"
+        ).innerHTML = `
             <div style="padding:30px;text-align:center;color:#f87171;font-size:2vh;">
                 Nie udało się pobrać danych z Google Sheets.<br>
                 <small>${escapeHTML(err.message)}</small>
             </div>
         `;
-        setTimeout(loadData, 10000);
+
+        setTimeout(
+            loadData,
+            10000
+        );
     }
 }
 
 
 function fitMonthToScreen() {
-    const container = document.getElementById("table-container");
-    const table = container ? container.querySelector("table") : null;
-    if (!container || !table) return;
 
-    const headRow = table.querySelector("thead tr");
-    const dataRows = table.querySelectorAll("tbody tr");
+    const container =
+        document.getElementById(
+            "table-container"
+        );
 
-    if (!headRow || !dataRows.length) return;
+    const table =
+        container
+            ? container.querySelector("table")
+            : null;
 
-    // Wysokość dostępna dla wierszy danych po odjęciu nagłówka tabeli.
-    const available = Math.max(
-        20,
-        container.clientHeight - headRow.getBoundingClientRect().height - 4
+    if (
+        !container ||
+        !table
+    ) {
+        return;
+    }
+
+    const headRow =
+        table.querySelector(
+            "thead tr"
+        );
+
+    const dataRows =
+        table.querySelectorAll(
+            "tbody tr"
+        );
+
+    if (
+        !headRow ||
+        !dataRows.length
+    ) {
+        return;
+    }
+
+    const available =
+        Math.max(
+            20,
+            container.clientHeight -
+            headRow.getBoundingClientRect().height -
+            4
+        );
+
+    const rowHeight =
+        Math.max(
+            16,
+            Math.floor(
+                available /
+                dataRows.length
+            )
+        );
+
+    dataRows.forEach(
+        row => {
+            row.style.height =
+                rowHeight + "px";
+        }
     );
-
-    const rowHeight = Math.max(16, Math.floor(available / dataRows.length));
-
-    dataRows.forEach(row => {
-        row.style.height = rowHeight + "px";
-    });
 }
 
+
 function initSmartMarquee() {
-    document.querySelectorAll(".tech-data span").forEach(span => {
-        const box = span.parentElement;
 
-        span.classList.remove("animate-scroll");
-        span.style.removeProperty("--scroll-dist");
+    document.querySelectorAll(
+        ".tech-data span"
+    ).forEach(
+        span => {
 
-        if (span.scrollWidth > box.clientWidth) {
-            box.style.justifyContent = "flex-start";
+            const box =
+                span.parentElement;
 
-            const distance = span.scrollWidth - box.clientWidth + 25;
-            span.style.setProperty("--scroll-dist", `-${distance}px`);
-            span.classList.add("animate-scroll");
-        } else {
-            box.style.justifyContent = "center";
+            span.classList.remove(
+                "animate-scroll"
+            );
+
+            span.style.removeProperty(
+                "--scroll-dist"
+            );
+
+            if (
+                span.scrollWidth >
+                box.clientWidth
+            ) {
+
+                box.style.justifyContent =
+                    "flex-start";
+
+                const distance =
+                    span.scrollWidth -
+                    box.clientWidth +
+                    25;
+
+                span.style.setProperty(
+                    "--scroll-dist",
+                    `-${distance}px`
+                );
+
+                span.classList.add(
+                    "animate-scroll"
+                );
+
+            } else {
+
+                box.style.justifyContent =
+                    "center";
+            }
         }
-    });
+    );
 }
 
 
 let currentView = "month";
 
+
 function tasksSheetUrl() {
+
     return "https://docs.google.com/spreadsheets/d/" +
         SPREADSHEET_ID +
         "/gviz/tq?tqx=out:csv&sheet=" +
-        encodeURIComponent("zadania");
+        encodeURIComponent(
+            "zadania"
+        );
 }
 
+
 async function loadTasks() {
+
     currentView = "tasks";
 
     try {
-        const response = await fetch(tasksSheetUrl() + "&_=" + Date.now(), {
-            cache: "no-store"
-        });
 
-        if (!response.ok) throw new Error("HTTP " + response.status);
+        const response =
+            await fetch(
+                tasksSheetUrl() +
+                "&_=" +
+                Date.now(),
+                {
+                    cache: "no-store"
+                }
+            );
 
-        const raw = await response.text();
-        const rows = parseCSV(raw);
+        if (!response.ok) {
+            throw new Error(
+                "HTTP " +
+                response.status
+            );
+        }
+
+        const raw =
+            await response.text();
+
+        const rows =
+            parseCSV(raw);
 
         if (!rows.length) {
-            document.getElementById("table-container").innerHTML =
+
+            document.getElementById(
+                "table-container"
+            ).innerHTML =
                 '<div class="task-empty">Brak zadań.</div>';
+
             return;
         }
 
         // Pierwsze dwa pola są prezentowane jako ZADANIA i KTO.
         // Dane z arkusza pozostają w pełni edytowalne.
-        const dataRows = rows.slice(1).filter(row =>
-            (row[0] || "").trim() !== "" || (row[1] || "").trim() !== ""
-        );
+
+        const dataRows =
+            rows.slice(1).filter(
+                row =>
+                    (row[0] || "").trim() !== "" ||
+                    (row[1] || "").trim() !== ""
+            );
 
         let html = `
             <table class="tasks-table" style="--task-row-count:${Math.max(dataRows.length, 1)}">
@@ -444,33 +715,59 @@ async function loadTasks() {
                     <col style="width:50%">
                     <col style="width:50%">
                 </colgroup>
+
                 <thead>
                     <tr>
                         <th>ZADANIA</th>
                         <th>KTO</th>
                     </tr>
                 </thead>
+
                 <tbody>
         `;
 
-        dataRows.forEach(row => {
-            html += `
-                <tr>
-                    <td class="task-text">${escapeHTML(row[0] || "")}</td>
-                    <td class="person-text">${escapeHTML(row[1] || "")}</td>
-                </tr>
-            `;
-        });
+        dataRows.forEach(
+            row => {
 
-        html += "</tbody></table>";
+                html += `
+                    <tr>
+                        <td class="task-text">
+                            ${escapeHTML(row[0] || "")}
+                        </td>
 
-        document.getElementById("table-container").innerHTML = html;
-        document.getElementById("update-time").innerText =
-            new Date().toLocaleTimeString("pl-PL");
+                        <td class="person-text">
+                            ${escapeHTML(row[1] || "")}
+                        </td>
+                    </tr>
+                `;
+            }
+        );
+
+        html +=
+            "</tbody></table>";
+
+        document.getElementById(
+            "table-container"
+        ).innerHTML =
+            html;
+
+        document.getElementById(
+            "update-time"
+        ).innerText =
+            new Date().toLocaleTimeString(
+                "pl-PL"
+            );
 
     } catch (err) {
-        console.error("Błąd zakładki Zadania:", err);
-        document.getElementById("table-container").innerHTML = `
+
+        console.error(
+            "Błąd zakładki Zadania:",
+            err
+        );
+
+        document.getElementById(
+            "table-container"
+        ).innerHTML = `
             <div style="padding:30px;text-align:center;color:#f87171;font-size:2vh;">
                 Nie udało się pobrać danych z zakładki Zadania.<br>
                 <small>${escapeHTML(err.message)}</small>
@@ -479,11 +776,22 @@ async function loadTasks() {
     }
 }
 
+
 function renderNav() {
+
     let html = "";
 
-    for (let i = 1; i <= 12; i++) {
-        const m = String(i).padStart(2, "0");
+    for (
+        let i = 1;
+        i <= 12;
+        i++
+    ) {
+
+        const m =
+            String(i).padStart(
+                2,
+                "0"
+            );
 
         html += `
             <button class="nav-btn ${currentView === "month" && m === currentViewMonth ? "active" : ""}"
@@ -500,60 +808,170 @@ function renderNav() {
         </button>
     `;
 
-    document.getElementById("month-nav").innerHTML = html;
+    document.getElementById(
+        "month-nav"
+    ).innerHTML =
+        html;
 }
 
+
 function showTasks() {
+
     currentView = "tasks";
+
     renderNav();
 
-    const monthHeader = document.getElementById("current-month-name");
+    const monthHeader =
+        document.getElementById(
+            "current-month-name"
+        );
+
     if (monthHeader) {
-        monthHeader.innerText = "ZADANIA";
+        monthHeader.innerText =
+            "ZADANIA";
     }
 
     loadTasks();
 }
 
+
 function changeMonth(month) {
+
     currentView = "month";
+
     currentViewMonth = month;
+
     renderNav();
+
     updateClock();
+
     loadData();
 }
 
-function updateClock() {
-    const now = new Date();
 
-    const clock = document.getElementById("clock");
+function updateClock() {
+
+    const now =
+        new Date();
+
+    const clock =
+        document.getElementById(
+            "clock"
+        );
+
     if (clock) {
-        clock.innerText = now.toLocaleTimeString("pl-PL");
+        clock.innerText =
+            now.toLocaleTimeString(
+                "pl-PL"
+            );
     }
 
-    const monthHeader = document.getElementById("current-month-name");
+    const monthHeader =
+        document.getElementById(
+            "current-month-name"
+        );
+
     if (monthHeader) {
-        monthHeader.innerText = currentView === "tasks"
-            ? "ZADANIA"
-            : monthNames[Number(currentViewMonth) - 1].toUpperCase() +
-              " " + now.getFullYear();
+
+        monthHeader.innerText =
+            currentView === "tasks"
+                ? "ZADANIA"
+                :
+                    monthNames[
+                        Number(
+                            currentViewMonth
+                        ) - 1
+                    ].toUpperCase() +
+                    " " +
+                    now.getFullYear();
     }
 }
 
+
+// ============================================================
+// AUTOMATYCZNE ODŚWIEŻANIE
+// ============================================================
+
+let refreshInProgress = false;
+
+
+async function refreshCurrentView() {
+
+    // Nie uruchamiamy kolejnego pobierania,
+    // jeżeli poprzednie jeszcze trwa.
+
+    if (refreshInProgress) {
+        return;
+    }
+
+    refreshInProgress = true;
+
+    try {
+
+        if (currentView === "tasks") {
+
+            await loadTasks();
+
+        } else {
+
+            await loadData();
+        }
+
+        console.log(
+            "Dane odświeżone:",
+            new Date().toLocaleTimeString("pl-PL")
+        );
+
+    } catch (error) {
+
+        console.error(
+            "Błąd automatycznego odświeżania:",
+            error
+        );
+
+    } finally {
+
+        refreshInProgress = false;
+    }
+}
+
+
+// ============================================================
+// START
+// ============================================================
+
 renderNav();
+
 updateClock();
+
 loadData();
 
-setInterval(updateClock, 1000);
 
-// Odświeżanie danych co 1 minutę.
-setInterval(refreshCurrentView, 60000);
+// Zegar - co sekundę.
 
-// GDR może rozpocząć/ zakończyć alarm w trakcie minuty,
-// dlatego sprawdzamy stan również co 20 sekund.
-setInterval(refreshCurrentView, 20000);
+setInterval(
+    updateClock,
+    1000
+);
 
-window.addEventListener("resize", () => {
-    fitMonthToScreen();
-    setTimeout(initSmartMarquee, 50);
-});
+
+// Google Sheets - automatyczne odświeżanie co 1 minutę.
+
+setInterval(
+    refreshCurrentView,
+    60000
+);
+
+
+window.addEventListener(
+    "resize",
+    () => {
+
+        fitMonthToScreen();
+
+        setTimeout(
+            initSmartMarquee,
+            50
+        );
+    }
+);
